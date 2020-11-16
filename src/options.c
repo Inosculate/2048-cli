@@ -37,7 +37,7 @@ struct gameoptions* parse_options(struct gameoptions *opt, int argc, char **argv
 {
     int c;
     while ((c = getopt(argc, argv, "aArcCiIhHs:b:")) != -1) {
-        switch (c) {
+        switch((char)c) {
         case 'a':
             opt->animate = true;
             break;
@@ -58,14 +58,16 @@ struct gameoptions* parse_options(struct gameoptions *opt, int argc, char **argv
             opt->ai = true;
             opt->interactive = true;
             break;
-        case 's':;
+        case 's':
             /* Stick with square for now */
-            int optint = strtol(optarg, NULL, 10);
-            if (optint < CONSTRAINT_GRID_MAX && optint > CONSTRAINT_GRID_MIN) {
-                opt->grid_height = optint;
-                opt->grid_width = optint;
+            {
+                int optint = strtol(optarg, NULL, 10);
+                if (optint < CONSTRAINT_GRID_MAX && optint > CONSTRAINT_GRID_MIN) {
+                    opt->grid_height = optint;
+                    opt->grid_width = optint;
+                }
+                break;
             }
-            break;
         case 'b':
             opt->spawn_rate = strtol(optarg, NULL, 10);
             break;

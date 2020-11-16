@@ -223,14 +223,26 @@ struct gamestate* gamestate_init(int argc, char **argv)
     srand(time(NULL));
 
     struct gamestate *g = malloc(sizeof(struct gamestate));
-    if (!g) goto gamestate_alloc_fail;
+    if (!g)
+    {
+        return NULL;
+    }
     g->gridsize = opt->grid_width * opt->grid_height;
 
     g->grid_data_ptr = calloc(g->gridsize, sizeof(int));
-    if (!g->grid_data_ptr) goto grid_data_alloc_fail;
+    if (!g->grid_data_ptr)
+    {
+        free(g);
+        return NULL;
+    }
 
     g->grid = malloc(opt->grid_height * sizeof(int*));
-    if (!g->grid) goto grid_alloc_fail;
+    if (!g->grid)
+    {
+        free(g->grid_data_ptr);
+        free(g);
+        return NULL;
+    }
 
     /* Switch to two allocation version */
     int i;
@@ -259,11 +271,8 @@ struct gamestate* gamestate_init(int argc, char **argv)
     gamestate_new_block(g);
     return g;
 
-grid_alloc_fail:
     free(g->grid_data_ptr);
-grid_data_alloc_fail:
     free(g);
-gamestate_alloc_fail:
     return NULL;
 }
 

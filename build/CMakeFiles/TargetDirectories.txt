@@ -1,0 +1,3 @@
+/src/2048-cli/build/CMakeFiles/rebuild_cache.dir
+/src/2048-cli/build/CMakeFiles/edit_cache.dir
+/src/2048-cli/build/CMakeFiles/2048.dir
