@@ -81,15 +81,21 @@ void Script::ParseOptions(gameoptions* opt)
 void Script::OnGameLoopIteration()
 {
     sol::function callableFunc = luaState["onGameLoopIteration"];
-    std::function<void()> func = callableFunc; 
-    func();
+    if(callableFunc.get_type() == sol::type::function)
+    {
+        std::function<void()> func = callableFunc; 
+        func();
+    }
 }
 
 void Script::OnGameLoopIterationComplete()
 {
     sol::function callableFunc = luaState["onGameLoopIterationComplete"];
-    std::function<void()> func = callableFunc; 
-    func();
+    if(callableFunc.get_type() == sol::type::function)
+    {
+        std::function<void()> func = callableFunc; 
+        func();
+    }
 }
 
 int Script::GetAnimateTime()
