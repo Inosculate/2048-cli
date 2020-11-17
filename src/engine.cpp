@@ -5,6 +5,8 @@
 #include "engine.h"
 #include "highscore.h"
 
+#include "Script.h"
+
 /* Utilize block counter to improve some of the functions so they can run
  * quicker */
 
@@ -215,10 +217,14 @@ static int digits_ceiling(unsigned int n)
  * through this function */
 struct gamestate* gamestate_init(int argc, char **argv)
 {
+    Script script;
+
     struct gameoptions *opt = gameoptions_default();
     if (!opt) return NULL;
 
     if (argc != 0) parse_options(opt, argc, argv);
+
+    script.ParseOptions(opt);
 
     srand(time(NULL));
 

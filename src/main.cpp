@@ -19,16 +19,14 @@ char *targetDir(char *env, char *path)
     char *dir;
     char *dirEnv;
     dirEnv = getenv(env);
-    dir = malloc(strlen(dirEnv) + strlen(path) + 1);
+    dir = (char*)malloc(strlen(dirEnv) + strlen(path) + 1);
     strcpy(dir, dirEnv);
     strcat(dir,path);
     return dir;
 }
 
 int main(int argc, char **argv)
-{
-
-    
+{   
     setlocale (LC_ALL, "");
     bindtextdomain ("gfx_terminal", targetDir("PWD","/18n/"));
     textdomain ("gfx_terminal");
