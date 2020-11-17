@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "options.h"
+#include <string>
 
 #define fatal(msg)\
     do {\
@@ -38,7 +39,7 @@ struct gfx_state;
 
 int gamestate_end_condition(struct gamestate*);
 void gamestate_new_block(struct gamestate*);
-int  gamestate_tick(struct gfx_state*, struct gamestate*, int, void (*callback)(struct gfx_state*, struct gamestate*));
+int  gamestate_tick(struct gfx_state*, struct gamestate*, int, void (*callback)(struct gfx_state*, struct gamestate*, const std::string&), const std::string& msg);
 void gamestate_clear(struct gamestate*);
 struct gamestate* gamestate_init(int argc, char **argv);
 

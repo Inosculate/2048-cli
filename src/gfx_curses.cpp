@@ -6,6 +6,8 @@
 #include <gettext.h>
 #include <locale.h>
 
+#include <string>
+
 #define NUMBER_OF_COLORS 7
 
 #define iterate(n, expression)\
@@ -61,17 +63,17 @@ struct gfx_state* gfx_init(struct gamestate *g)
     return s;
 }
 
-void gfx_draw(struct gfx_state *s, struct gamestate *g)
+void gfx_draw(struct gfx_state *s, struct gamestate *g, const std::string& msg)
 {
     if (g->score_last)
-        mvwprintw(s->window, 0, 0, gettext("Score: %d (+%d)\n"), g->score, g->score_last);
+        mvwprintw(s->window, 0, 0, gettext("Score: %d (+%d)   Hi: %d\n"), g->score, g->score_last, g->score_high);
     else
-        mvwprintw(s->window, 0, 0, gettext("Score: %d\n"), g->score);
+        mvwprintw(s->window, 0, 0, gettext("Score: %d   Hi: %d\n"), g->score, g->score_high);
 
     if (g->score >= g->score_high)
         g->score_high = g->score;
 
-    mvwprintw(s->window, 1, 0, gettext("   Hil: %d\n"), g->score_high);
+    mvwprintw(s->window, 1, 0, gettext("%s\n"), msg.c_str());
 
     wattron(s->window, A_DIM);
     iterate(g->opts->grid_width * (g->print_width + 2) + 1, waddch(s->window, '-'));

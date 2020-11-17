@@ -6,16 +6,16 @@
 #include <libintl.h>
 #include <locale.h>
 #include <string.h>
-
+#include <memory>
 #include "Script.h"
 
-Script script;
+std::unique_ptr<Script> script;
 
-void draw_then_sleep(struct gfx_state *s, struct gamestate *g)
+void draw_then_sleep(struct gfx_state *s, struct gamestate *g, const std::string& msg)
 {
-    gfx_draw(s, g);
+    gfx_draw(s, g, msg);
     /* Have a fixed time for each turn to animate (160 default) */
-    gfx_sleep(script.GetAnimateTime() / g->opts->grid_width);
+    gfx_sleep(script->GetAnimateTime() / g->opts->grid_width);
 }
 
 char *targetDir(char *env, char *path)
@@ -40,7 +40,8 @@ int main(int argc, char **argv)
         fatal("failed to allocate gamestate");
     }
 
-    script.ParseOptions(g->opts);
+    script = std::make_unique<Script>(g);
+    script->ParseOptions(g->opts);
 
     struct gfx_state *s = NULL;
 
@@ -54,10 +55,10 @@ int main(int argc, char **argv)
     int game_running = true;
     while (game_running) {
         
-        script.OnGameLoopIteration();
+        script->OnGameLoopIteration();
 
         if (g->opts->interactive)
-            gfx_draw(s, g);
+            gfx_draw(s, g, script->GetMessage());
 
 get_new_key:;
         int direction = dir_invalid;
@@ -93,7 +94,7 @@ get_new_key:;
         /* Game will only end if 0 moves available */
         if (game_running) {
             gamestate_tick(s, g, direction, g->opts->animate && g->opts->interactive
-                    ? draw_then_sleep : NULL);
+                    ? draw_then_sleep : NULL, script->GetMessage());
 
             if (g->moved == 0)
                 goto get_new_key;
@@ -106,6 +107,8 @@ get_new_key:;
                 game_running = false;
             }
         }
+
+        script->OnGameLoopIterationComplete();
     }
 
     if (g->opts->interactive) {

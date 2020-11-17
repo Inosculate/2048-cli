@@ -13,7 +13,7 @@
 /* This function will move all blocks in the given game the given direction.
  * The callback function is called after each single move. It can be used to
  * animate the movement of the board. */
-static void gravitate(struct gfx_state *s, struct gamestate *g, int d, void (*callback)(struct gfx_state *s, struct gamestate *g))
+static void gravitate(struct gfx_state *s, struct gamestate *g, int d, void (*callback)(struct gfx_state *s, struct gamestate *g, const std::string&), const std::string& msg)
 {
 
 #define swap_if_space(xoff, yoff)\
@@ -38,7 +38,7 @@ static void gravitate(struct gfx_state *s, struct gamestate *g, int d, void (*ca
                 }
             }
             if (callback)
-                callback(s, g);
+                callback(s, g, msg);
         }
     }
     else if (d == dir_right) {
@@ -50,7 +50,7 @@ static void gravitate(struct gfx_state *s, struct gamestate *g, int d, void (*ca
                 }
             }
             if (callback)
-                callback(s, g);
+                callback(s, g, msg);
         }
     }
     else if (d == dir_down) {
@@ -62,7 +62,7 @@ static void gravitate(struct gfx_state *s, struct gamestate *g, int d, void (*ca
                 }
             }
             if (callback)
-                callback(s, g);
+                callback(s, g, msg);
         }
     }
     else if (d == dir_up) {
@@ -74,7 +74,7 @@ static void gravitate(struct gfx_state *s, struct gamestate *g, int d, void (*ca
                 }
             }
             if (callback)
-                callback(s, g);
+                callback(s, g, msg);
         }
     }
     else {
@@ -94,7 +94,7 @@ static void gravitate(struct gfx_state *s, struct gamestate *g, int d, void (*ca
  * Right merging: 4 0 2 0
  * Left merging:  2 0 4 0
  */
-static void merge(struct gfx_state *s, struct gamestate *g, int d, void (*callback)(struct gfx_state *s, struct gamestate *g))
+static void merge(struct gfx_state *s, struct gamestate *g, int d, void (*callback)(struct gfx_state *s, struct gamestate *g, const std::string&), const std::string& msg)
 {
 
 #define merge_if_equal(xoff, yoff)\
@@ -146,7 +146,7 @@ static void merge(struct gfx_state *s, struct gamestate *g, int d, void (*callba
     }
 
     if (callback)
-        callback(s, g);
+        callback(s, g, msg);
 
 #undef merge_if_equal
 }
@@ -287,13 +287,13 @@ struct gamestate* gamestate_init(int argc, char **argv)
 /* A tick is a gravitate, merge then gravitate all in the same direction.
  * the moved variable is set to 0 initially and if the gravitate of merge
  * functions modify it, we can determine which action to take. */
-int gamestate_tick(struct gfx_state *s, struct gamestate *g, int d, void (*callback)(struct gfx_state*, struct gamestate*))
+int gamestate_tick(struct gfx_state *s, struct gamestate *g, int d, void (*callback)(struct gfx_state*, struct gamestate*, const std::string&), const std::string& msg)
 {
     /* Reset move. Altered by gravitate and merge if we do move */
     g->moved = 0;
-    gravitate(s, g, d, callback);
-    merge(s, g, d, callback);
-    gravitate(s, g, d, callback);
+    gravitate(s, g, d, callback, msg);
+    merge(s, g, d, callback, msg);
+    gravitate(s, g, d, callback, msg);
     return g->moved;
 }
 

@@ -30,7 +30,7 @@ struct gfx_state* gfx_init(struct gamestate *g)
     return s;
 }
 
-void gfx_draw(struct gfx_state *s, struct gamestate *g)
+void gfx_draw(struct gfx_state *s, struct gamestate *g, const std::string&)
 {
     (void) s;
 

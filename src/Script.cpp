@@ -2,21 +2,37 @@
 #include <fstream>
 #include <string>
 
-Script::Script()
+Script::Script(gamestate* gs) : state(gs)
 {
     std::ifstream fileStream("script.lua");
     auto scriptContents = std::string((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
+
     luaState.open_libraries(
         sol::lib::base,
 		sol::lib::string,
 		sol::lib::math,
 		sol::lib::table,
 		sol::lib::io);
+
     luaState.safe_script(scriptContents);
 
     luaState["SetAnimateTime"] = [this](int time){
         this->animateTime = time;
     };
+
+    luaState["Write"] = [this](const std::string& message){
+        this->message = message;
+    };
+
+    luaState["getGameState"] = [this](){
+        return state;
+    };
+
+    luaState.new_usertype<gamestate>("gamestate",
+        "score", &gamestate::score,
+        "score_high", &gamestate::score_high,
+        "score_last", &gamestate::score_last,
+        "blocks_in_play", &gamestate::blocks_in_play); // the usual
 }
 
 void Script::ParseOptions(gameoptions* opt)
@@ -69,7 +85,19 @@ void Script::OnGameLoopIteration()
     func();
 }
 
+void Script::OnGameLoopIterationComplete()
+{
+    sol::function callableFunc = luaState["onGameLoopIterationComplete"];
+    std::function<void()> func = callableFunc; 
+    func();
+}
+
 int Script::GetAnimateTime()
 {
     return animateTime;
+}
+
+const std::string& Script::GetMessage()
+{
+    return message;
 }
