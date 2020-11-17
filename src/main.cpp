@@ -7,11 +7,15 @@
 #include <locale.h>
 #include <string.h>
 
+#include "Script.h"
+
+Script script;
+
 void draw_then_sleep(struct gfx_state *s, struct gamestate *g)
 {
     gfx_draw(s, g);
     /* Have a fixed time for each turn to animate (160 default) */
-    gfx_sleep(160 / g->opts->grid_width);
+    gfx_sleep(script.GetAnimateTime() / g->opts->grid_width);
 }
 
 char *targetDir(char *env, char *path)
@@ -36,6 +40,8 @@ int main(int argc, char **argv)
         fatal("failed to allocate gamestate");
     }
 
+    script.ParseOptions(g->opts);
+
     struct gfx_state *s = NULL;
 
     if (g->opts->interactive) {
@@ -47,6 +53,8 @@ int main(int argc, char **argv)
 
     int game_running = true;
     while (game_running) {
+        
+        script.OnGameLoopIteration();
 
         if (g->opts->interactive)
             gfx_draw(s, g);

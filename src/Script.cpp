@@ -13,6 +13,10 @@ Script::Script()
 		sol::lib::table,
 		sol::lib::io);
     luaState.safe_script(scriptContents);
+
+    luaState["SetAnimateTime"] = [this](int time){
+        this->animateTime = time;
+    };
 }
 
 void Script::ParseOptions(gameoptions* opt)
@@ -20,10 +24,10 @@ void Script::ParseOptions(gameoptions* opt)
     auto options = luaState["options"];
     if(options)
     {
-        auto enableColour = luaState["options"]["enableColour"];
-        if(enableColour.get_type() == sol::type::boolean)
+        auto enable_colour = luaState["options"]["enable_colour"];
+        if(enable_colour.get_type() == sol::type::boolean)
         {
-            opt->enable_color = enableColour;
+            opt->enable_color = enable_colour;
         }
         auto animate = luaState["options"]["animate"];
         if(animate.get_type() == sol::type::boolean)
@@ -58,3 +62,14 @@ void Script::ParseOptions(gameoptions* opt)
     } 
 }
 
+void Script::OnGameLoopIteration()
+{
+    sol::function callableFunc = luaState["onGameLoopIteration"];
+    std::function<void()> func = callableFunc; 
+    func();
+}
+
+int Script::GetAnimateTime()
+{
+    return animateTime;
+}

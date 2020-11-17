@@ -212,27 +212,8 @@ static int digits_ceiling(unsigned int n)
     return l + 1;
 }
 
-/* Return NULL if we couldn't allocate space for the gamestate. initializating the
- * gamestate will parse the options internally, so any caller should pass argc and argv
- * through this function */
-struct gamestate* gamestate_init(int argc, char **argv)
+void setUpGrid(struct gamestate *g, struct gameoptions *opt)
 {
-    Script script;
-
-    struct gameoptions *opt = gameoptions_default();
-    if (!opt) return NULL;
-
-    if (argc != 0) parse_options(opt, argc, argv);
-
-    script.ParseOptions(opt);
-
-    srand(time(NULL));
-
-    struct gamestate *g = malloc(sizeof(struct gamestate));
-    if (!g)
-    {
-        return NULL;
-    }
     g->gridsize = opt->grid_width * opt->grid_height;
 
     g->grid_data_ptr = calloc(g->gridsize, sizeof(int));
@@ -255,6 +236,27 @@ struct gamestate* gamestate_init(int argc, char **argv)
     int **iterator = g->grid;
     for (i = 0; i < g->gridsize; i += opt->grid_width)
         *iterator++ = &g->grid_data_ptr[i];
+}
+
+/* Return NULL if we couldn't allocate space for the gamestate. initializating the
+ * gamestate will parse the options internally, so any caller should pass argc and argv
+ * through this function */
+struct gamestate* gamestate_init(int argc, char **argv)
+{
+    struct gameoptions *opt = gameoptions_default();
+    if (!opt) return NULL;
+
+    if (argc != 0) parse_options(opt, argc, argv);
+
+    srand(time(NULL));
+
+    struct gamestate *g = malloc(sizeof(struct gamestate));
+    if (!g)
+    {
+        return NULL;
+    }
+
+    setUpGrid(g, opt);
 
     g->moved = 0;
     g->score = 0;
